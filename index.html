@@ -1,1 +1,641 @@
-<!doctype html><html lang="en" style="height:100%"><head><script>function isMobile(){const e=window.navigator.userAgent;return/mobile|android|iphone|ipad|phone/i.test(e)}isMobile()&&(window.location.href="https://ext.baseopendev.com/ext/dashboard_mobile_disable/14c264309a784b577484d14f227664050a115ed7/index.html",document.head.insertAdjacentHTML("beforeend",'<meta http-equiv="Content-Security-Policy" content="script-src \'none\'">'))</script><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="滚动表格组件 by 18551847429"/><meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>滚动表格 by 18551847429</title><script defer="defer" src="./static/js/main.0f7e6375.js"></script><link href="./static/css/main.b90dab00.css" rel="stylesheet"></head><body style="height:100%"><noscript>You need to enable JavaScript to run this app.</noscript><div id="root" style="height:100%"></div></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico"/>
+    <title>飞书多维表格 · 仪表盘操作指南 · 18551847429</title>
+    <style>
+        /* ===== 全局重置 & 字体 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+            background: #0a0e17;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ===== 动态星尘背景 ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(2px 2px at 20% 30%, rgba(0, 200, 255, .15), transparent),
+                radial-gradient(2px 2px at 40% 70%, rgba(120, 80, 255, .12), transparent),
+                radial-gradient(2px 2px at 60% 10%, rgba(0, 230, 180, .13), transparent),
+                radial-gradient(2px 2px at 75% 50%, rgba(220, 50, 255, .10), transparent),
+                radial-gradient(2px 2px at 90% 85%, rgba(0, 210, 240, .14), transparent),
+                radial-gradient(1px 1px at 5% 95%, rgba(255, 160, 0, .08), transparent),
+                radial-gradient(1px 1px at 35% 45%, rgba(150, 100, 255, .09), transparent),
+                radial-gradient(1px 1px at 55% 88%, rgba(0, 250, 200, .11), transparent),
+                radial-gradient(1px 1px at 82% 22%, rgba(190, 130, 255, .07), transparent);
+            background-size: 300px 300px;
+            pointer-events: none;
+            z-index: 0;
+            animation: dustFloat 18s ease-in-out infinite alternate;
+        }
+
+        @keyframes dustFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: .7;
+            }
+            100% {
+                transform: translate(-15px, -25px) scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        /* ===== 主容器 ===== */
+        .holo-chamber {
+            position: relative;
+            z-index: 1;
+            max-width: 1240px;
+            width: 100%;
+            background: rgba(8, 16, 32, 0.65);
+            backdrop-filter: blur(28px) saturate(1.4);
+            -webkit-backdrop-filter: blur(28px) saturate(1.4);
+            border-radius: 56px;
+            padding: 48px 52px 54px;
+            box-shadow:
+                0 0 0 1px rgba(64, 224, 208, .15),
+                0 0 60px rgba(0, 180, 255, .06),
+                inset 0 0 140px rgba(0, 212, 255, .03);
+            border: 1px solid rgba(96, 216, 252, .12);
+            transition: box-shadow .5s;
+        }
+
+        .holo-chamber:hover {
+            box-shadow:
+                0 0 0 1px rgba(64, 224, 208, .25),
+                0 0 80px rgba(0, 180, 255, .10),
+                inset 0 0 160px rgba(0, 212, 255, .05);
+        }
+
+        /* ===== 标题 ===== */
+        .header-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 44px;
+            flex-wrap: wrap;
+            gap: 16px 26px;
+        }
+
+        .title-group {
+            display: flex;
+            align-items: baseline;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .main-title {
+            font-weight: 700;
+            font-size: 34px;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #b2f0ff 0%, #7bc8ff 42%, #a78bfa 72%, #d8b4fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 36px rgba(123, 200, 255, .18);
+            position: relative;
+        }
+
+        .main-title::after {
+            content: '◆';
+            font-size: 14px;
+            -webkit-text-fill-color: initial;
+            color: rgba(128, 196, 255, .25);
+            margin-left: 16px;
+            letter-spacing: 0;
+        }
+
+        .sub-badge {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(148, 204, 255, .55);
+            letter-spacing: 3px;
+            padding: 4px 16px;
+            border: 1px solid rgba(84, 184, 232, .15);
+            border-radius: 46px;
+            background: rgba(58, 136, 206, .04);
+            backdrop-filter: blur(4px);
+            text-transform: uppercase;
+        }
+
+        .version-tag {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(144, 176, 214, .38);
+            border-left: 1px solid rgba(112, 168, 222, .12);
+            padding-left: 18px;
+            letter-spacing: 1px;
+        }
+
+        /* ===== 双栏布局 ===== */
+        .grid-dual {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px 48px;
+            align-items: start;
+        }
+
+        @media (max-width: 880px) {
+            .grid-dual {
+                grid-template-columns: 1fr;
+                gap: 44px;
+            }
+            .holo-chamber {
+                padding: 28px 20px 32px;
+                border-radius: 32px;
+            }
+            .main-title {
+                font-size: 27px;
+            }
+            .step-card {
+                padding: 18px 18px 18px 22px;
+            }
+        }
+
+        /* ===== 左侧  ===== */
+        .steps-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .panel-label {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            color: rgba(104, 192, 228, .33);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .panel-label::before {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(68, 188, 236, .23), transparent);
+        }
+
+        .step-card {
+            background: rgba(9, 21, 41, 0.43);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 22px 24px 22px 28px;
+            border: 1px solid rgba(76, 194, 238, .08);
+            box-shadow: inset 0 0 30px rgba(29, 134, 209, .02);
+            transition: all .35s cubic-bezier(.23, 1, .32, 1);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, #39c0ff, #9466ff, #00d4b0);
+            opacity: .3;
+            transition: opacity .4s;
+        }
+
+        .step-card:hover {
+            border-color: rgba(92, 208, 248, .20);
+            background: rgba(12, 31, 61, 0.53);
+            box-shadow: 0 0 40px rgba(62, 162, 226, .04), inset 0 0 40px rgba(74, 186, 244, .02);
+            transform: translateX(4px);
+        }
+
+        .step-card:hover::before {
+            opacity: .7;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 6px;
+        }
+
+        .step-num {
+            font-weight: 700;
+            font-size: 20px;
+            color: #67d6ff;
+            text-shadow: 0 0 20px rgba(86, 198, 254, .19);
+            letter-spacing: 0;
+            line-height: 1;
+            background: rgba(66, 174, 234, .06);
+            border-radius: 99px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(108, 198, 246, .12);
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 19px;
+            color: #dfecff;
+            letter-spacing: .3px;
+            text-shadow: 0 0 12px rgba(153, 205, 255, .04);
+        }
+
+        .step-desc {
+            font-weight: 450;
+            font-size: 16px;
+            color: rgba(189, 215, 245, .73);
+            line-height: 1.5;
+            padding-left: 51px;
+            letter-spacing: .2px;
+        }
+
+        .step-desc strong {
+            color: #87d6ff;
+            font-weight: 550;
+            text-shadow: 0 0 6px rgba(69, 179, 251, .12);
+        }
+
+        .glow-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #49dbff;
+            box-shadow: 0 0 14px #37bef8;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        /* ===== 右侧 ===== */
+        .video-hub {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .video-frame {
+            position: relative;
+            border-radius: 36px;
+            overflow: hidden;
+            background: #030810;
+            box-shadow:
+                0 0 0 1px rgba(94, 218, 242, .08),
+                0 0 110px rgba(47, 147, 219, .04);
+            transition: box-shadow .5s;
+        }
+
+        .video-frame:hover {
+            box-shadow:
+                0 0 0 1px rgba(114, 225, 249, .16),
+                0 0 80px rgba(57, 167, 247, .06);
+        }
+
+        .video-frame video {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 36px;
+            background: #020712;
+            transition: transform .6s cubic-bezier(.23, 1, .32, 1);
+        }
+
+        .video-frame:hover video {
+            transform: scale(1.01);
+        }
+
+        /* 视频角落装饰 */
+        .corner-glyph {
+            position: absolute;
+            pointer-events: none;
+            z-index: 2;
+            opacity: .18;
+        }
+
+        .corner-glyph--tl {
+            top: 12px;
+            left: 12px;
+            width: 44px;
+            height: 44px;
+            border-top: 2px solid rgba(118, 224, 253, .35);
+            border-left: 2px solid rgba(138, 214, 255, .35);
+            border-radius: 12px 0 0 0;
+        }
+
+        .corner-glyph--br {
+            bottom: 12px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            border-bottom: 2px solid rgba(158, 154, 255, .30);
+            border-right: 2px solid rgba(178, 164, 255, .30);
+            border-radius: 0 0 12px 0;
+        }
+
+        /* 视频底部光条 */
+        .v-beam {
+            height: 2px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(98, 203, 243, .12) 20%,
+                    rgba(142, 122, 255, .18) 50%,
+                    rgba(79, 213, 227, .12) 80%,
+                    transparent 100%);
+            border-radius: 4px;
+            margin-top: -2px;
+            position: relative;
+            z-index: 3;
+            filter: blur(2px);
+            animation: beamPulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes beamPulse {
+            0% {
+                opacity: .4;
+                transform: scaleX(.97);
+            }
+            100% {
+                opacity: .9;
+                transform: scaleX(1.02);
+            }
+        }
+
+        /* 视频下方辅助信息 */
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px 0 8px;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+        }
+
+        .video-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(152, 199, 239, .36);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .video-label::before {
+            content: '▶';
+            font-size: 10px;
+            color: rgba(102, 201, 241, .26);
+        }
+
+        .video-hint {
+            font-size: 14px;
+            font-weight: 460;
+            color: rgba(132, 182, 221, .30);
+            letter-spacing: .6px;
+            border: 1px solid rgba(106, 172, 211, .06);
+            padding: 2px 18px;
+            border-radius: 60px;
+            background: rgba(36, 116, 173, .02);
+        }
+
+        /* ===== 底部状态栏 ===== */
+        .status-bar {
+            margin-top: 44px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(98, 184, 223, .06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            font-size: 14px;
+            color: rgba(126, 175, 217, .24);
+            letter-spacing: .8px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pulse-ring {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #5fdfff;
+            box-shadow: 0 0 18px #389eff;
+            animation: pulseLive 2.4s ease-in-out infinite;
+        }
+
+        @keyframes pulseLive {
+            0%,
+            100% {
+                opacity: .4;
+                transform: scale(.9);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .status-divider {
+            width: 1px;
+            height: 18px;
+            background: rgba(111, 171, 214, .06);
+        }
+
+        /* ===== 滚动条美化 ===== */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(12, 24, 44, .5);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(103, 187, 237, .18);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(113, 207, 247, .28);
+        }
+
+        /* ===== 响应式微调 ===== */
+        @media (max-width: 520px) {
+            .step-desc {
+                padding-left: 0;
+                margin-top: 6px;
+                font-size: 15px;
+            }
+            .step-header {
+                flex-wrap: wrap;
+            }
+            .main-title::after {
+                display: none;
+            }
+            .version-tag {
+                border-left: none;
+                padding-left: 0;
+            }
+            .status-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 舱体 ===== -->
+    <div class="holo-chamber">
+
+        <header class="header-section">
+            <div class="title-group">
+                <h1 class="main-title">飞书多维表格 · 仪表盘</h1>
+                <span class="sub-badge">✦ 滚动表格接入</span>
+                <span class="version-tag">v2.0 · 星云协议</span>
+            </div>
+        </header>
+
+        <div class="grid-dual">
+
+            <!-- 左：步骤面板 -->
+            <div class="steps-panel">
+                <div class="panel-label">◈ 操作序列</div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">01</span>
+                        <span class="step-title">新建仪表盘</span>
+                    </div>
+                    <div class="step-desc">
+                        在飞书多维表格中点击 <strong>「新建仪表盘」</strong>，进入空白画布。
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">02</span>
+                        <span class="step-title">添加组件 → 更多</span>
+                    </div>
+                    <div class="step-desc">
+                        在仪表盘界面点击 <strong>「添加组件」</strong>，向下滑动至最下方，选择 <strong>「更多」</strong>。
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">03</span>
+                        <span class="step-title">选取「滚动表格」</span>
+                    </div>
+                    <div class="step-desc">
+                        在更多组件库中找到 <strong>「滚动表格」</strong>，点击 <strong>「使用」</strong> 将其添加到仪表盘。
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">04</span>
+                        <span class="step-title">配置滚动表格</span>
+                    </div>
+                    <div class="step-desc">
+                        依次设置：<strong>数据源</strong>、<strong>数据范围</strong>、<strong>展示字段</strong>；开启 <strong>高亮</strong> 或按指定行高亮；启用 <strong>溢出文本滚动</strong>。
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">05</span>
+                        <span class="step-title">确定 &amp; 调整尺寸</span>
+                    </div>
+                    <div class="step-desc">
+                        点击 <strong>「确定」</strong> 完成配置，在仪表盘上拖动滚动表格边缘，调整至合适大小。
+                    </div>
+                </div>
+
+                <div style="margin-top: 6px; padding-left: 6px;">
+                    <span style="font-size: 13px; color: rgba(127, 191, 235, .22); letter-spacing: 1px;">
+                        ⚡ 共 5 步 · 预计耗时 120 秒
+                    </span>
+                </div>
+            </div>
+
+            <!-- 右：视频 -->
+            <div class="video-hub">
+                <div class="panel-label" style="margin-bottom: 2px;">◈ 全息演示</div>
+
+                <div class="video-frame">
+                    <!-- 角落装饰 -->
+                    <div class="corner-glyph corner-glyph--tl"></div>
+                    <div class="corner-glyph corner-glyph--br"></div>
+
+                    <!-- ★★★  ★★★ -->
+                    <video controls playsinline preload="metadata" poster="">
+                        <source src="./tutorial.mp4" type="video/mp4" />
+                        您的设备暂不支持全息视频播放，请升级至星际协议。
+                    </video>
+
+                    <!-- 底部光束 -->
+                    <div class="v-beam"></div>
+                </div>
+
+                <div class="video-meta">
+                    <span class="video-label">同步演示 · 飞书多维表格</span>
+                    <span class="video-hint">⏵ 操作实录 2K</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部状态 -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="pulse-ring"></span>
+                <span>系统在线 · 全息链路稳定</span>
+            </div>
+            <div class="status-item">
+                <span class="status-divider"></span>
+                <span>✦ 节点：仪表盘 v3.0</span>
+                <span class="status-divider"></span>
+                <span>⏶ 信号：量子加密</span>
+            </div>
+            <div class="status-item">
+                <span>✦ 2026 · 数脉工坊协议</span>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
